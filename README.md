@@ -205,3 +205,114 @@ So to handle this, we use an arrow function without any parameters in it.
 Here on page load, `()` gets executed and it returns the `handleSqaureClick(props)` function itself. So when we click the button, the actual function gets executed
 
 ---
+
+
+### State in react
+
+To `remember`    things, react components uses `State`. To use State, we need to import if from react first into our component
+
+```
+import {useState} from "react";
+
+```
+> We are using `{}` (destructuring) here, since useState is a named function (not a default function)
+
+**useState, accepts an initial value of the state and returns 2 things**
+* current state of that component
+* a function that can update the state
+
+In our case, let us say we want the Sqaures to be initially populated with O and when they are clicked we can update them to something like X then
+
+```
+const [initialValue, updateStateFunction] = useState("O");
+```
+
+use the `useState` with the initial value of `O` and then in the `onclick` attribute, just call any function inside which we will have the `updateStateFunction("X")` which sets the value to `x`
+
+```
+
+function handleSquareClick(props) {
+    console.log("Square " + props.value + " is clicked");
+    updateStateFunction("X");
+  }
+
+<button className="square" onClick={() => handleSquareClick(props)}>
+      {props.value} : {initialValue}
+</button>
+```
+
+---
+
+### Lifting state up to parent compontent to refactor
+
+Each square will have its own state. When we need to find the winner, we need to know states of all the square. 
+
+But each square has its own private state and it cannot be accessed by other components. We can ask each and every square what its state is, we can write complex logic, but a good practice in react is to  ***lift the state up to the parent***
+
+This is easy, because board here holds all the 9 squares. So if we remember what the state of each square is at the board level then it will be easy and simple to calculate the winner.
+
+We remove the state from the squares and create a new state in the board level, by creating a `squares_array` with 9 `null` values or `O`'s initially
+
+```
+import { useState } from "react";
+
+const [squares_array, updateSqaureValue] = useState(Array(9).fill("O"));
+```
+
+Now since i am also using identifier for each square, I am passing multiple attributes at the square level
+
+```
+<Square identifier={1} value={squares_array[0]}/>
+```
+
+Now at the `Squares` component default function, i need to catch the props and call use them 
+
+```
+<button className="square">
+      {props.identifier} : {props.value}
+</button>
+```
+
+This will work great, but the value will always remain the initial value itself.
+
+---
+
+#### Updating values from child component
+
+Now i need to update the value of the button when clicked and that too at that particular component itself. 
+
+So in the `onClick` attribute of the square, i can call a regular function in the Square component itself, which will print a console message using the `identifier` and then call the `state update` function of the parent `board` componet using `props.parent_state_update_function`
+
+***Make sure to use ()=> at both the parent level and the child level in case if arguments are passed to call the function***
+
+If we dont pass them, then they will be executed on page load itself and sometimes it might cause an infinite loop as well
+
+Also since we need to make sure that each square needs to be updated only when that square is clicked, make sure to pass the index/indentifier at the parent level
+
+```
+# At child component level
+<button className="square" onClick={() => handleSquareClick(props)}>
+      {props.identifier} : {props.value}
+</button>
+
+# onClick of the button handleSquareClick will be called with props as the parameter, we used () => here since parameters are passed
+function handleSquareClick(squareProps){
+    console.log("Square " + squareProps.identifier + " has been clicked !!");
+    squareProps.onSquareClick();
+}
+# This will print the console message with the identifier and will then call the parent component attribute that is with the same name
+
+# In parent component, we must have that attribute present which will then call that specific function with that specific value only
+<Square identifier={1} value={squares_array[0]} onSquareClick = {() => handleSquareClickFromBoard(0)} />
+
+
+# Here the index identifier is being passed and a new array is created using slice for immutability and the X is replaced at that particular index only
+function handleSquareClickFromBoard(i){
+   const new_squares = squares_array.slice();
+   new_squares[i] = "X";
+   updateSqaureValue(new_squares);
+}
+```
+
+---
+
