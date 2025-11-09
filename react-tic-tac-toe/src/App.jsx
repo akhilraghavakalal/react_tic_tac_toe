@@ -3,13 +3,21 @@ import Square from "./Components/Square.jsx";
 import { useState } from "react";
 
 export default function Board() {
-  const [squares_array, updateSquareValue] = useState(Array(9).fill("O"));
+  const [squares_array, updateSquareValue] = useState(Array(9).fill(null));
+  const [is2ndUser, update2ndUser] = useState(false);
 
   function handleSquareClickFromBoard(i){
     const new_squares = squares_array.slice();
-    new_squares[i] = "X";
-    updateSquareValue(new_squares);
+    if(is2ndUser){
+      new_squares[i] = "X";
+      update2ndUser(false);
+    }else{
+      new_squares[i] = "O";
+      update2ndUser(true);
+    }
     
+    // update2ndUser(!is2ndUser);
+    updateSquareValue(new_squares);
   }
 
   return (
