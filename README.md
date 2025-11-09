@@ -316,3 +316,54 @@ function handleSquareClickFromBoard(i){
 
 ---
 
+*** State variables are constant and cannot be updated directly but the values can be replaced
+
+Declared this
+
+```
+const [is2ndUser, update2ndUser] = useState(false);
+```
+
+Initially created the is2ndUser with `False` value then when it is false, it means that the user is the first user and will have `O` as the value inside the square when clicked
+
+Then i tried to update the value of is2ndUser to true like this
+
+```
+is2ndUser = true;
+update2ndUser(is2ndUser);
+
+<!-- but this failed since is2ndUser is a constant state variable -->
+```
+
+To solve this we need to manually pass the value of the state and `replace it not change the variable value by assigning something to it`
+
+```
+if(!is2ndUser){
+  new_squares[i] = "O";
+  update2ndUser(true);
+}else{
+  new_squares[i] = "X";
+  update2ndUser(false);
+}
+
+<!-- This can also be done simply using the below line -->
+update2ndUser(!is2ndUser);
+```
+
+---
+
+### Avoiding unnecessary rendering
+
+A person can click a square only once. If an user has entered a value in a square then it cannot be updated again.
+
+This can be handled using a simple `if` check where we check if the value in the `Square[i]` is populated or not and `return` if it is
+
+```
+// if the value is already populate and not null, dont update it
+if (new_squares[i]) {
+  return;
+}
+
+```
+
+---
