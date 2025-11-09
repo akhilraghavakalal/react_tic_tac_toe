@@ -148,3 +148,60 @@ We can aboviously use `<div> and </div>` and place the buttons inside this, but 
 
 ---
 
+#### React Props
+
+Props are the `arguments (parameters)` that are passed into the `React components` via `HTML attributes`
+
+`HTML Attributes -> Props -> React Components`
+
+* props stands for `properties`
+
+In our case, each `Sqaure` component can have a `value` attribute from 1 to 9 and when this value can be passed from `Board` component jsx to the actual `Sqaure` component where it can be used 
+
+```
+<Square  value={1} model = "test" />
+
+export default function Square(props) {}
+```
+
+This can now be used inside the Square component by accessing props like `{props.value}, {props.model}`
+
+* ***{} is used for destructuring purpose*** 
+
+```
+<button className="square">
+      {props.value} {props.model}
+</button>
+```
+This can be used to populate the button content
+
+#### Handling onclick function
+
+In the `Square` component, we have the code for button, we can write a function that does something like console logs what the value of button is and then call this function in the button using the `onclick` attribute in the jsx.
+
+But jsx is rendered at the page load time or when ever a change is made to the content. So When the page loads, the `onClick` function gets executed and since we would not have pressed a button then, the function would print undefined has been clicked or throw an error
+
+```
+function handleSquareClick(props) {
+  console.log("Square " + props.value + " is clicked");
+}
+
+
+<button className="square" onClick={handleSquareClick(props)}>
+      {props.value} {props.model}
+</button>
+```
+
+* The `onclick` is getting executed on page load itself
+
+So to handle this, we use an arrow function without any parameters in it.
+
+```
+<button className="square" onClick={() => handleSquareClick(props)}>
+      {props.value} {props.model}
+</button>
+```
+
+Here on page load, `()` gets executed and it returns the `handleSqaureClick(props)` function itself. So when we click the button, the actual function gets executed
+
+---
